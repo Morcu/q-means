@@ -16,54 +16,38 @@ df = pd.read_csv('kmeans_data.csv',
     usecols=['Feature 1', 'Feature 2', 'Class'])
 
 
-###############
-# Generate random dataset
-###############
 
-# Number of clusters
-k = 3
-n_data_points_per_class = 50
-true_centroids_x = [-0.4, 0.6, 0.0]
-true_centroids_y = [-0.4, 0.0, 0.8]
-true_centroids_var_x = [0.25, 0.2, 0.1]
-true_centroids_var_y = [0.25, 0.2, 0.6]
 
-x = np.random.normal(loc=true_centroids_x[0], scale=true_centroids_var_x[0], size=n_data_points_per_class) 
-y = np.random.normal(loc=true_centroids_y[0], scale=true_centroids_var_y[0], size=n_data_points_per_class)
-category = np.repeat(0, n_data_points_per_class)
-for i in range(1, k):
-    category = np.vstack((category, np.repeat(i, n_data_points_per_class)))
-    x = np.vstack((x, np.random.normal(loc=true_centroids_x[i], scale=true_centroids_var_x[i], size=n_data_points_per_class)))
-    y = np.vstack((y, np.random.normal(loc=true_centroids_y[i], scale=true_centroids_var_y[i], size=n_data_points_per_class)))
+def generate_dataset(k=3, n_data_points_per_class=50):
+    """
+    Generate random dataset
+    """
+    # Number of clusters
+    true_centroids_x = [-0.4, 0.6, 0.0]
+    true_centroids_y = [-0.4, 0.0, 0.8]
+    true_centroids_var_x = [0.25, 0.2, 0.1]
+    true_centroids_var_y = [0.25, 0.2, 0.6]
+
+    x = np.random.normal(loc=true_centroids_x[0], scale=true_centroids_var_x[0], size=n_data_points_per_class) 
+    y = np.random.normal(loc=true_centroids_y[0], scale=true_centroids_var_y[0], size=n_data_points_per_class)
+    category = np.repeat(0, n_data_points_per_class)
+    for i in range(1, k):
+        category = np.vstack((category, np.repeat(i, n_data_points_per_class)))
+        x = np.vstack((x, np.random.normal(loc=true_centroids_x[i], scale=true_centroids_var_x[i], size=n_data_points_per_class)))
+        y = np.vstack((y, np.random.normal(loc=true_centroids_y[i], scale=true_centroids_var_y[i], size=n_data_points_per_class)))
+
+    data = np.vstack([x.reshape(n), y.reshape(n)]).transpose()
+    category = category.reshape(n)
+
+    return data, category
+
+k=3
+n_data_points_per_class=50
+n = k*n_data_points_per_class
 
 # Plot the data and the centers generated as random
-# centers = np.array([[-0.25, 0.2], [0, -0.1], [0.25, 0.35]])
 colors=['green', 'blue', 'black']
-# for i in range(k):
-#     plt.scatter(x[i], y[i], s=7, color = colors[i])
-# plt.scatter(true_centroids_x, true_centroids_y, marker='*', c='g', s=150)
-
-# plt.show()
-n = k*n_data_points_per_class
-data = np.vstack([x.reshape(n), y.reshape(n)]).transpose()
-category = category.reshape(n)
-# data = pd.DataFrame({'x': x.reshape(n), 'y': y.reshape(n)})
-# # Change categorical data to number 0-2
-# df["Class"] = pd.Categorical(df["Class"])
-# df["Class"] = df["Class"].cat.codes
-# # Change dataframe to numpy matrix
-# data = df.values[:, 0:2]
-# category = df.values[:, 2]
-
-# k = 3
-# # Number of training data
-# n = data.shape[0]
-# # Number of features in the data
-# c = data.shape[1]
-# Generate random centers, here we use sigma and mean to ensure it represent the whole data
-# mean = np.mean(data, axis = 0)
-# std = np.std(data, axis = 0)
-# centers = np.random.randn(k,c)*std + mean
+data, category = generate_dataset()
 
 # Setting centers seed
 centers = np.array([[-0.25, 0.2], [0, -0.1], [0.25, 0.35]])
@@ -161,7 +145,7 @@ centers_new
 
 # Plot the data and the centers generated as random
 for i in range(n):
-    plt.scatter(data[i, 0], data[i,1], s=7, color = colors[int(category[i])])
+    plt.scatter(data[i, 0], data[i,1], s=7, color = colors[clusters[i]])
 plt.scatter(centers_new[:,0], centers_new[:,1], marker='*', c='g', s=150)
 
 plt.show()
