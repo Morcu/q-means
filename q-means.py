@@ -10,12 +10,13 @@ from qiskit import QuantumRegister, ClassicalRegister
 from qiskit import QuantumCircuit
 from qiskit import Aer, execute
 from q_distance import distance_centroids
+from sklearn import datasets
+from scipy.cluster.vq import whiten
+from sklearn import preprocessing
 
 # Get the data from the .csv file
 df = pd.read_csv('kmeans_data.csv',
     usecols=['Feature 1', 'Feature 2', 'Class'])
-
-
 
 
 def generate_dataset(k=3, n_data_points_per_class=50):
@@ -41,17 +42,45 @@ def generate_dataset(k=3, n_data_points_per_class=50):
 
     return data, category
 
-k=3
-n_data_points_per_class=50
-n = k*n_data_points_per_class
+# k=3
+# n_data_points_per_class=50
+# n = k*n_data_points_per_class
 
-# Plot the data and the centers generated as random
-colors=['green', 'blue', 'black']
-data, category = generate_dataset()
+# data, category = generate_dataset()
+
+# iris = datasets.load_iris()
+# data = whiten(iris.data[:, :2])  # we only take the first two features.
+# category = iris.target
+
+
+
+# data = datasets.make_blobs(n_samples=200, n_features=2,
+#                           centers=3, cluster_std=1.8,random_state=101)
+
+# data, category = data[0], data[1]
+
+df["Class"] = pd.Categorical(df["Class"])
+df["Class"] = df["Class"].cat.codes
+data = df.values[:, 0:2]
+category = df.values[:, 2].astype(np.int64)
+
+data = preprocessing.maxabs_scale(data)
+
+n = data.shape[0]
+k = np.max(category) + 1
 
 # Setting centers seed
-centers = np.array([[-0.25, 0.2], [0, -0.1], [0.25, 0.35]])
+# centers = np.random.normal(size=[k, 2])
+centers = np.array([[-0.7811304,  -0.98469473],
+ [ 0.71581636, -2.70639111],
+ [-1.17047437, -0.16253077]])
+
+# Blobs initialization
+# centers = np.array([[ 0.09496144,  0.58918275],
+#  [-0.55211413, -1.22519759],
+#  [ 0.40227889,  0.95161636]])
 print(centers)
+
 
 
 def point_centroid_distances(point, centroids):
@@ -108,7 +137,7 @@ def point_centroid_distances(point, centroids):
     return results_list
 
 
-threshold = 2e-2
+threshold = 0.04
 error_tolerance = 1e-1
 
 centers_old = np.zeros(centers.shape) # to store old centers
@@ -118,16 +147,17 @@ data.shape
 clusters = np.zeros(n)
 distances = np.zeros((n,k))
 
-error = np.linalg.norm(centers_new - centers_old)
+error = np.inf #np.linalg.norm(centers_new - centers_old)
 upper_error = np.inf
 
 # When, after an update, the estimate of that center stays the same, exit loop
-while (error - error_tolerance) < upper_error and error > threshold:
+# while (error - error_tolerance) < upper_error and error > threshold:
+while error > threshold:
     # Measure the distance to every center
     distances = np.array(list(map(lambda x: distance_centroids(x, centers), data)))
-
+    # print(distances)
     # Assign all training data to closest center
-    clusters = np.argmin(distances, axis = 1)
+    clusters = np.argmax(distances, axis = 1)
     
     centers_old = deepcopy(centers_new)
 
@@ -140,9 +170,8 @@ while (error - error_tolerance) < upper_error and error > threshold:
 
     print(error)
 
-centers_new
 
-
+colors=['green', 'blue', 'black', 'red']
 # Plot the data and the centers generated as random
 for i in range(n):
     plt.scatter(data[i, 0], data[i,1], s=7, color = colors[clusters[i]])
