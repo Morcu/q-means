@@ -5,6 +5,11 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
+from sklearn import datasets
+from scipy.cluster.vq import kmeans, whiten
+from sklearn.cluster import KMeans
+from sklearn import preprocessing
+import time
 
 # Get the data from the .csv file
 df = pd.read_csv('kmeans_data.csv',
@@ -35,25 +40,60 @@ def generate_dataset(k=3, n_data_points_per_class=50):
 
     return data, category
 
-k=3
-n_data_points_per_class=50
-n = k*n_data_points_per_class
+# k=3
+# n_data_points_per_class=50
+# n = k*n_data_points_per_class
 
-# Plot the data and the centers generated as random
-colors=['green', 'blue', 'black']
-data, category = generate_dataset()
+# # Plot the data and the centers generated as random
+# colors=['green', 'blue', 'black']
+# data, category = generate_dataset()
+
+# data = datasets.make_blobs(n_samples=200, n_features=2,
+#                           centers=4, cluster_std=1.8,random_state=101)
+
+# data, category = whiten(data[0]), data[1]
 
 
-centers = np.array([[-0.25, 0.2], [0, -0.1], [0.25, 0.35]])
+
+df["Class"] = pd.Categorical(df["Class"])
+df["Class"] = df["Class"].cat.codes
+data = df.values[:, 0:2]
+category = df.values[:, 2].astype(np.int64)
+
+# data = preprocessing.maxabs_scale(data)
+
+n = data.shape[0]
+k = np.max(category) + 1
+
+
+# Original initialization
+# centers = np.array([[-0.7811304,  -0.98469473],
+#  [ 0.71581636, -2.70639111],
+#  [-1.17047437, -0.16253077]])
+
+np.random.seed(0)
+centers = np.random.normal(scale=0.5, size=[k, 2])
+
+print(centers)
+
+# kmeans = KMeans(n_clusters=k, random_state=0).fit(data)
+
+# colors=['green', 'blue', 'black', 'red']
+# for i in range(n):
+#     plt.scatter(data[i, 0], data[i,1], s=7, color = colors[kmeans.labels_[i]])
+# plt.scatter(kmeans.cluster_centers_[:,0], kmeans.cluster_centers_[:,1], marker='*', c='g', s=150)
+
+# plt.show()
 
 centers_old = np.zeros(centers.shape) # to store old centers
 centers_new = deepcopy(centers) # Store new centers
 
-data.shape
 clusters = np.zeros(n)
 distances = np.zeros((n,k))
 
-error = np.linalg.norm(centers_new - centers_old)
+error = np.inf 
+
+start = time.time()
 
 # When, after an update, the estimate of that center stays the same, exit loop
 while error != 0:
@@ -69,16 +109,16 @@ while error != 0:
         centers_new[i] = np.mean(data[clusters == i], axis=0)
     error = np.linalg.norm(centers_new - centers_old)
     print(error)
-centers_new 
 
+print("Time: {}".format(time.time() - start))
 
 # Plot the data and the centers generated as random
+colors=['green', 'blue', 'black', 'red']
 for i in range(n):
     plt.scatter(data[i, 0], data[i,1], s=7, color = colors[clusters[i]])
 plt.scatter(centers_new[:,0], centers_new[:,1], marker='*', c='g', s=150)
 
 plt.show()
-
 
 
 

@@ -13,6 +13,7 @@ from q_distance import distance_centroids
 from sklearn import datasets
 from scipy.cluster.vq import whiten
 from sklearn import preprocessing
+import time
 
 # Get the data from the .csv file
 df = pd.read_csv('kmeans_data.csv',
@@ -70,12 +71,15 @@ n = data.shape[0]
 k = np.max(category) + 1
 
 # Setting centers seed
-# centers = np.random.normal(size=[k, 2])
-centers = np.array([[-0.7811304,  -0.98469473],
- [ 0.71581636, -2.70639111],
- [-1.17047437, -0.16253077]])
+np.random.seed(0)
+centers = np.random.normal(scale=0.5, size=[k, 2])
 
-# Blobs initialization
+# Original initialization
+# centers = np.array([[-0.7811304,  -0.98469473],
+#  [ 0.71581636, -2.70639111],
+#  [-1.17047437, -0.16253077]])
+
+# 3 Blobs initialization
 # centers = np.array([[ 0.09496144,  0.58918275],
 #  [-0.55211413, -1.22519759],
 #  [ 0.40227889,  0.95161636]])
@@ -150,25 +154,30 @@ distances = np.zeros((n,k))
 error = np.inf #np.linalg.norm(centers_new - centers_old)
 upper_error = np.inf
 
+start = time.time()
+
 # When, after an update, the estimate of that center stays the same, exit loop
 # while (error - error_tolerance) < upper_error and error > threshold:
 while error > threshold:
     # Measure the distance to every center
     distances = np.array(list(map(lambda x: distance_centroids(x, centers), data)))
-    # print(distances)
+
     # Assign all training data to closest center
-    clusters = np.argmax(distances, axis = 1)
+    clusters = np.argmin(distances, axis = 1)
     
     centers_old = deepcopy(centers_new)
 
     # Calculate mean for every cluster and update the center
     for i in range(k):
-        centers_new[i] = np.mean(data[clusters == i], axis=0)
+        if np.sum(clusters == i) != 0:
+            centers_new[i] = np.mean(data[clusters == i], axis=0)
         
     upper_error = deepcopy(error)
     error = np.linalg.norm(centers_new - centers_old)
 
     print(error)
+
+print("Time: {}".format(time.time() - start))
 
 
 colors=['green', 'blue', 'black', 'red']
