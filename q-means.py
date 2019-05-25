@@ -121,35 +121,46 @@ def point_centroid_distances(point, centroids):
 
 # In[69]:
 
+threshold = 0.002
+# noise_var = 0.001
 
 centers_old = np.zeros(centers.shape) # to store old centers
 centers_new = deepcopy(centers) # Store new centers
+
+# # Additive Gaussian noise for robustness
+# noise = np.random.normal(scale=noise_var, size=centers.shape)
+# centers_new += noise / 2
+# threshold = threshold_orig + np.random.normal(scale=noise_var) / 2
 
 data.shape
 clusters = np.zeros(n)
 distances = np.zeros((n,k))
 
 error = np.linalg.norm(centers_new - centers_old)
-upper_error = error + 1
+upper_error = np.inf
 # When, after an update, the estimate of that center stays the same, exit loop
-while (error + 0.02) < upper_error:
+while (error + threshold) < upper_error and error > threshold:
     # Measure the distance to every center
-       
     distances = np.array(list(map(lambda x: distance_centroids(x, centers), data)))
 
     # Assign all training data to closest center
     clusters = np.argmin(distances, axis = 1)
     
     centers_old = deepcopy(centers_new)
+
     # Calculate mean for every cluster and update the center
     for i in range(k):
         centers_new[i] = np.mean(data[clusters == i], axis=0)
+        # Additive Gaussian noise for robustness
+        noise = np.random.normal(scale=noise_var, size=centers_new[i].shape)
+        centers_new[i] += noise / 2
+        # threshold = threshold_orig + np.random.normal(scale=noise_var) / 2
         
     upper_error = deepcopy(error)
     error = np.linalg.norm(centers_new - centers_old)
-    if error < 0.02:
-        break
+
     print(error)
+    
 centers_new
 
 
