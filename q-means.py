@@ -132,7 +132,7 @@ distances = np.zeros((n,k))
 error = np.linalg.norm(centers_new - centers_old)
 upper_error = error + 1
 # When, after an update, the estimate of that center stays the same, exit loop
-while error != 0:
+while (error + 0.02) < upper_error:
     # Measure the distance to every center
     
     
@@ -146,6 +146,10 @@ while error != 0:
     for i in range(k):
         centers_new[i] = np.mean(data[clusters == i], axis=0)
     error = np.linalg.norm(centers_new - centers_old)
+    upper_error = deepcopy(error)
+    error = np.linalg.norm(centers_new - centers_old)
+    if error < 0.02:
+        break
     print(error)
 centers_new
 
