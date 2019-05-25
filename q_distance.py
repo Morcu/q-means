@@ -71,12 +71,15 @@ def distance_centroids(point, centroids):
     # Get backend using the Aer provider
     backend = Aer.get_backend('qasm_simulator')
 
-    # Encode the point to measure and centroid
-    for i in range(k):
-        qc.u3(theta_list[i], phi_list[i], 0, qreg_centroid[i])
-        qc.u3(theta_input, phi_input, 0, qreg_input[i]) 
+    
+    # for i in range(k):
+         
 
     for i in range(k):
+        # Encode the point to measure and centroid
+        qc.u3(theta_list[i], phi_list[i], 0, qreg_centroid[i])
+        qc.u3(theta_input, phi_input, 0, qreg_input[i])
+
         # Apply a Hadamard to the ancillaries
         qc.h(qreg_psi[i])
 
