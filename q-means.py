@@ -121,8 +121,8 @@ def point_centroid_distances(point, centroids):
 
 # In[69]:
 
-threshold = 0.002
-
+threshold = 2e-2
+error_tolerance = 1e-1
 
 centers_old = np.zeros(centers.shape) # to store old centers
 centers_new = deepcopy(centers) # Store new centers
@@ -135,7 +135,7 @@ error = np.linalg.norm(centers_new - centers_old)
 upper_error = np.inf
 
 # When, after an update, the estimate of that center stays the same, exit loop
-while (error + threshold) < upper_error and error > threshold:
+while (error - error_tolerance) < upper_error and error > threshold:
     # Measure the distance to every center
     distances = np.array(list(map(lambda x: distance_centroids(x, centers), data)))
 
