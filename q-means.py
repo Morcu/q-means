@@ -12,6 +12,7 @@ from numpy import pi
 from qiskit import QuantumRegister, ClassicalRegister
 from qiskit import QuantumCircuit
 from qiskit import Aer, execute
+from q_distance import distance_centroids
 
 # Get the data from the .csv file
 df = pd.read_csv('kmeans_data.csv',
@@ -135,7 +136,7 @@ while error != 0:
     # Measure the distance to every center
     
     
-    distances = np.array(list(map(lambda x: point_centroid_distances(x, centers), data)))
+    distances = np.array(list(map(lambda x: distance_centroids(x, centers), data)))
 
     # Assign all training data to closest center
     clusters = np.argmin(distances, axis = 1)
