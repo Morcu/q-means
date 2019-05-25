@@ -57,9 +57,9 @@ print(centers)
 
 # Plot the data and the centers generated as random
 colors=['green', 'blue', 'black']
-for i in range(n):
-    plt.scatter(data[i, 0], data[i,1], s=7, color = colors[int(category[i])])
-plt.scatter(centers[:,0], centers[:,1], marker='*', c='g', s=150)
+# for i in range(n):
+#     plt.scatter(data[i, 0], data[i,1], s=7, color = colors[int(category[i])])
+# plt.scatter(centers[:,0], centers[:,1], marker='*', c='g', s=150)
 
 
 # In[67]:
@@ -134,8 +134,7 @@ upper_error = error + 1
 # When, after an update, the estimate of that center stays the same, exit loop
 while (error + 0.02) < upper_error:
     # Measure the distance to every center
-    
-    
+       
     distances = np.array(list(map(lambda x: distance_centroids(x, centers), data)))
 
     # Assign all training data to closest center
@@ -145,7 +144,7 @@ while (error + 0.02) < upper_error:
     # Calculate mean for every cluster and update the center
     for i in range(k):
         centers_new[i] = np.mean(data[clusters == i], axis=0)
-    error = np.linalg.norm(centers_new - centers_old)
+        
     upper_error = deepcopy(error)
     error = np.linalg.norm(centers_new - centers_old)
     if error < 0.02:
@@ -162,6 +161,7 @@ for i in range(n):
     plt.scatter(data[i, 0], data[i,1], s=7, color = colors[int(category[i])])
 plt.scatter(centers_new[:,0], centers_new[:,1], marker='*', c='g', s=150)
 
+plt.show()
 
 # In[ ]:
 
