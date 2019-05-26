@@ -21,3 +21,9 @@ See also the list of [contributors](https://github.com/Morcu/q-means/graphs/cont
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE.md](LICENSE.md) file for details
 
+
+## References
+Kerenidis et al.  q-means: A quantum algorithm for unsupervised machine learning, 2018
+https://arxiv.org/pdf/1812.03584.pdf
+
+
