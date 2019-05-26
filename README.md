@@ -7,10 +7,10 @@ Quantum version of the k-means algorithm where the distance is approximated usin
 
 ## Authors
 
-* **David Morcuende** 
-* **Carlos Villacampa**
-* **Pablo Díez**
-* **Carlos García**
+* **David Morcuende-Cantador** 
+* **Carlos Villacampa-Calvo**
+* **Pablo Díez-Valle**
+* **Carlos García-Alvarado**
 * **Boris Villazón-Terrazas**
 
 
