@@ -8,10 +8,11 @@ Quantum version of the k-means algorithm where the distance is approximated usin
 ## Authors
 
 * **David Morcuende** 
-* **Carlos García**
-* **Pablo Díez**
-* **Boris Villazón**
 * **Carlos Villacampa**
+* **Pablo Díez**
+* **Carlos García**
+* **Boris Villazón-Terrazas**
+
 
 
 See also the list of [contributors](https://github.com/Morcu/q-means/graphs/contributors) who participated in this project.
